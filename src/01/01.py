@@ -2,48 +2,6 @@ import collections
 import itertools
 from typing import List, Iterator
 
-
-def is_increasing(x: float, y: float) -> bool:
-    diff = y - x
-    return True if diff > 0 else False
-
-
-def part_one(sonar_reading: List[int]) -> int:
-    total_increasing = 0
-    for x, y in sliding_window(sonar_reading, 2):
-        if is_increasing(x, y):
-            total_increasing += 1
-    return total_increasing
-
-
-def part_two(sonar_reading: List[int]) -> int:
-    total_increasing = 0
-    for x, y in sliding_window([sum((x, y, z))
-                                for x, y, z
-                                in sliding_window(sonar_reading, 3)],
-                               2):
-        if is_increasing(x, y):
-            total_increasing += 1
-    return total_increasing
-
-
-def sliding_window(iterable: Iterator, n: int):
-    it = iter(iterable)
-    window = collections.deque(itertools.islice(it, n), maxlen=n)
-    if len(window) == n:
-        yield tuple(window)
-    for x in it:
-        window.append(x)
-        yield tuple(window)
-
-
-def main():
-    # 7 increasing values
-    # problem([199, 200, 208, 210, 200, 207, 240, 269, 260, 263])
-    print(part_one(input))
-    print(part_two(input))
-
-
 input = [122,
          129,
          116,
@@ -2045,5 +2003,50 @@ input = [122,
          6601,
          6632,
          ]
+
+
+def is_increasing(x: float, y: float) -> bool:
+    diff = y - x
+    return True if diff > 0 else False
+
+
+def part_one(sonar_reading: List[int]) -> int:
+    total_increasing = 0
+    for x, y in sliding_window(sonar_reading, 2):
+        if is_increasing(x, y):
+            total_increasing += 1
+    return total_increasing
+
+
+def part_two(sonar_reading: List[int]) -> int:
+    total_increasing = 0
+    list_of_sums = [
+        sum((x, y, z))
+        for x, y, z
+        in sliding_window(sonar_reading, 3)
+    ]
+    for x, y in sliding_window(list_of_sums, 2):
+        if is_increasing(x, y):
+            total_increasing += 1
+    return total_increasing
+
+
+def sliding_window(iterable: Iterator, n: int):
+    it = iter(iterable)
+    window = collections.deque(itertools.islice(it, n), maxlen=n)
+    if len(window) == n:
+        yield tuple(window)
+    for x in it:
+        window.append(x)
+        yield tuple(window)
+
+
+def main():
+    # 7 increasing values
+    # problem([199, 200, 208, 210, 200, 207, 240, 269, 260, 263])
+    print(part_one(input))
+    print(part_two(input))
+
+
 if __name__ == '__main__':
     main()

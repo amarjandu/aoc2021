@@ -1010,34 +1010,69 @@ input = ["forward 2",
 class Submarine:
     x_pos: int
     z_pos: int
+    aim: int
 
     @property
-    def direction_mapping(self) -> Mapping[str, Tuple[Callable, str]]:
+    def direction_mapping_problem_one(self) -> Mapping[str, Tuple[Callable, str]]:
         return {
             'forward': (operator.add, 'x_pos'),
             'down': (operator.add, 'z_pos'),
             'up': (operator.sub, 'z_pos')
         }
 
+    def down(self, x):
+        self.aim += x
+
+    def up(self, x):
+        self.aim -= x
+
+    def forward(self, x):
+        self.x_pos += x
+        self.z_pos += (self.aim * x)
+
+    @property
+    def direction_mapping(self) -> Mapping[str, Callable]:
+        return {
+            'forward': self.forward,
+            'down': self.down,
+            'up': self.up
+        }
+
+    def move_position_problem_1(self, input: str):
+        direction, magnitude = input.split(' ')
+        magnitude = int(magnitude)
+        assert direction in self.direction_mapping_problem_one.keys(), direction
+        operator_, attribute_name = self.direction_mapping_problem_one[direction]
+        self.__setattr__(attribute_name,
+                         operator_(self.__getattribute__(attribute_name), magnitude))
+
     def move_position(self, input: str):
         direction, magnitude = input.split(' ')
         magnitude = int(magnitude)
         assert direction in self.direction_mapping.keys(), direction
-        operator_, attribute_name = self.direction_mapping[direction]
-        self.__setattr__(attribute_name,
-                         operator_(self.__getattribute__(attribute_name), magnitude))
+        callable_ = self.direction_mapping[direction]
+        callable_(magnitude)
 
 
 def problem_one():
-    sub = Submarine(x_pos=0, z_pos=0)
+    sub = Submarine(x_pos=0, z_pos=0, aim=0)
     for direction in input:
-        sub.move_position(direction)
+        sub.move_position_problem_1(direction)
+    print(sub)
+    print(sub.x_pos * sub.z_pos)  # 1670340
+
+
+def problem_two():
+    sub = Submarine(x_pos=0, z_pos=0, aim=0)
+    for vector in input:
+        sub.move_position(vector)
     print(sub)
     print(sub.x_pos * sub.z_pos)
 
 
 def main():
-    problem_one()
+    # problem_one()
+    problem_two()
 
 
 if __name__ == '__main__':
